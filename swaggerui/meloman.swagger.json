@@ -1,0 +1,1495 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Курсовая работа по курсу БСБД ИУ8-81 МГТУ им. Н. Э. Баумана 2022г.",
+    "description": "Сервис предоставляет REST API для работы с БД меломан.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Ilya",
+      "url": "https://github.com/Medvate",
+      "email": "any_mail@mail.ru"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://raw.githubusercontent.com/Medvate/meloman/main/LICENSE"
+    }
+  },
+  "tags": [
+    {
+      "name": "Meloman",
+      "description": "Сервис-интерфейс к БД меломан",
+      "externalDocs": {
+        "description": "Find out more about EchoService",
+        "url": "https://github.com/grpc-ecosystem/grpc-gateway"
+      }
+    }
+  ],
+  "host": "localhost:80",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/albums": {
+      "get": {
+        "summary": "поиск альбома по фильтру",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetAlbumsByFilter",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetAlbumsByFilterResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "albumTitle",
+            "description": "название альбома.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "artistName",
+            "description": "имя артиста.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "trackTitle",
+            "description": "название композиции.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/albums/{id}/tracks": {
+      "get": {
+        "summary": "получение композиций альбома",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetAlbumTracks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetAlbumTracksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid альбома",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "создание/добавление композиции в альбом",
+        "description": "access: admin",
+        "operationId": "Meloman_CreateTrack",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanCreateTrackResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid альбома",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/melomanCreateTrackRequestTrack"
+            }
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/artists": {
+      "get": {
+        "summary": "получить список всех исполнитей",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetArtists",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetArtistsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "число в одном ответе, по уполномочию 100.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "description": "сдвиг в списке.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "создание исполнителя",
+        "description": "access: admin",
+        "operationId": "Meloman_CreateArtist",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanCreateArtistsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/melomanCreateArtistRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/artists/popular": {
+      "get": {
+        "summary": "получить топ популярных исполнителей",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetTopPopularArtists",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetTopPopularArtistsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/artists/{id}": {
+      "get": {
+        "summary": "получение исполнителя по id",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetArtistByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetArtistByIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid исполнителя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/artists/{id}/albums": {
+      "get": {
+        "summary": "получение списка альбомов исполнителя",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetArtistAlbums",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetArtistAlbumsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid исполнителя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "создание альбома",
+        "description": "access: admin",
+        "operationId": "Meloman_CreateAlbum",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanCreateAlbumResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid исполнителя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "данные альбома/сингла",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateAlbumRequestNewAlbum"
+            }
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth": {
+      "post": {
+        "summary": "авторизация",
+        "description": "access: *",
+        "operationId": "Meloman_Auth",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanAuthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "логин и пароль",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/melomanCredentials"
+            }
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ]
+      }
+    },
+    "/api/v1/formats": {
+      "get": {
+        "summary": "получить список всех форматов",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetFormats",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetFormatsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/labels": {
+      "get": {
+        "summary": "получить список всех издателей",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetLabels",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetLabelsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "summary": "получение всех пользователей",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "число пользователей в одном ответе, по уполномочию 100.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "description": "сдвиг в списке пользователй.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "создание пользователя/регистрация",
+        "description": "access: *",
+        "operationId": "Meloman_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanCreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "логин и пароль",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/melomanCredentials"
+            }
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "summary": "получение пользователя по id",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetUserByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetUserByIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "id пользователя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{id}/collection": {
+      "get": {
+        "summary": "получить коллекцию пользователя",
+        "description": "access: user, admin",
+        "operationId": "Meloman_GetUserCollection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/melomanGetUserCollectionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid пользователя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{id}/role": {
+      "put": {
+        "summary": "изменение роли пользователя",
+        "description": "access: admin",
+        "operationId": "Meloman_UpdateUserRole",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "uuid пользователя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "роль",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/melomanUpdateUserRoleRequestValue"
+            }
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{userId}/albums/{albumId}": {
+      "delete": {
+        "summary": "удаление альбома из коллекции пользователя",
+        "description": "access: owner",
+        "operationId": "Meloman_RemoveAlbum",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "uuid пользователя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "albumId",
+            "description": "uuid альбома",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "добавление альбома в коллекцию пользователя",
+        "description": "access: owner",
+        "operationId": "Meloman_AddAlbum",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "uuid пользователя",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "albumId",
+            "description": "uuid альбома",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Meloman"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/ping": {
+      "get": {
+        "summary": "проверка работоспособности сервиса",
+        "description": "access: *",
+        "operationId": "Meloman_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Meloman"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CreateAlbumRequestNewAlbum": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "название",
+          "required": [
+            "title"
+          ]
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32",
+          "title": "год издания",
+          "required": [
+            "year"
+          ]
+        },
+        "image": {
+          "type": "string",
+          "title": "обложка (base64 encoded image)"
+        },
+        "formatId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "id формата",
+          "required": [
+            "format_id"
+          ]
+        },
+        "labelId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "id издателя",
+          "required": [
+            "label_id"
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "year",
+        "formatId",
+        "labelId"
+      ]
+    },
+    "GetUserCollectionResponseStatistic": {
+      "type": "object",
+      "properties": {
+        "albumNum": {
+          "type": "integer",
+          "format": "int64",
+          "title": "число альбомов в коллекции"
+        },
+        "trackNum": {
+          "type": "integer",
+          "format": "int64",
+          "title": "число композиций в коллекции"
+        },
+        "artistNum": {
+          "type": "integer",
+          "format": "int64",
+          "title": "число исполнителей в коллекции"
+        },
+        "firstAdded": {
+          "type": "string",
+          "format": "date-time",
+          "title": "время добавление первого альбома в коллекцию"
+        },
+        "lastAdded": {
+          "type": "string",
+          "format": "date-time",
+          "title": "время добавление последнего альбома в коллекцию"
+        }
+      }
+    },
+    "melomanAuthResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "id авторизированного пользователя"
+        }
+      }
+    },
+    "melomanCreateAlbumResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid созданного альбома"
+        }
+      }
+    },
+    "melomanCreateArtistRequest": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "title": "имя исполнителя/группы",
+          "required": [
+            "full_name"
+          ]
+        },
+        "biography": {
+          "type": "string",
+          "title": "биография"
+        },
+        "image": {
+          "type": "string",
+          "title": "base64 encoded image"
+        }
+      },
+      "required": [
+        "fullName"
+      ]
+    },
+    "melomanCreateArtistsResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid созданного исполнителя/группы"
+        }
+      }
+    },
+    "melomanCreateTrackRequestTrack": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "назавние композиции",
+          "required": [
+            "title"
+          ]
+        },
+        "number": {
+          "type": "integer",
+          "format": "int32",
+          "title": "номер композиции в альбоме",
+          "required": [
+            "number"
+          ]
+        },
+        "lenght": {
+          "type": "string",
+          "title": "длительность, формат: ЧЧ:ММ:СС",
+          "required": [
+            "lenght"
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "number",
+        "lenght"
+      ]
+    },
+    "melomanCreateTrackResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid созданного трека"
+        }
+      }
+    },
+    "melomanCreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "id созданного пользователя"
+        }
+      }
+    },
+    "melomanCredentials": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "title": "логин",
+          "required": [
+            "login"
+          ]
+        },
+        "password": {
+          "type": "string",
+          "title": "пароль",
+          "required": [
+            "password"
+          ]
+        }
+      },
+      "required": [
+        "login",
+        "password"
+      ]
+    },
+    "melomanFormat": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "id формата"
+        },
+        "name": {
+          "type": "string",
+          "title": "наименование"
+        }
+      }
+    },
+    "melomanGetAlbumTracksResponse": {
+      "type": "object",
+      "properties": {
+        "tracks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetAlbumTracksResponseTrack"
+          },
+          "title": "копозиции альбома отсортированные по номеру в альбоме"
+        }
+      }
+    },
+    "melomanGetAlbumTracksResponseTrack": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid композиции"
+        },
+        "title": {
+          "type": "string",
+          "title": "назавние композиции"
+        },
+        "number": {
+          "type": "integer",
+          "format": "int32",
+          "title": "номер композиции в альбоме"
+        },
+        "lenght": {
+          "type": "string",
+          "title": "длительность, формат: ЧЧ:ММ:СС"
+        }
+      }
+    },
+    "melomanGetAlbumsByFilterResponse": {
+      "type": "object",
+      "properties": {
+        "albums": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetAlbumsByFilterResponseAlbum"
+          },
+          "title": "список альбомов"
+        }
+      }
+    },
+    "melomanGetAlbumsByFilterResponseAlbum": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "id альбома"
+        },
+        "title": {
+          "type": "string",
+          "title": "название"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32",
+          "title": "год издания"
+        },
+        "image": {
+          "type": "string",
+          "title": "обложка (base64 encoded image)"
+        },
+        "format": {
+          "$ref": "#/definitions/melomanFormat",
+          "title": "формат"
+        },
+        "label": {
+          "$ref": "#/definitions/MedvatemelomanLabel",
+          "title": "издатель"
+        },
+        "artist": {
+          "$ref": "#/definitions/melomanGetAlbumsByFilterResponseAlbumArtist",
+          "title": "исполнитель"
+        }
+      }
+    },
+    "melomanGetAlbumsByFilterResponseAlbumArtist": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid исполнителя"
+        },
+        "name": {
+          "type": "string",
+          "title": "название исполнителя"
+        }
+      }
+    },
+    "melomanGetArtistAlbumsResponse": {
+      "type": "object",
+      "properties": {
+        "albums": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetArtistAlbumsResponseAlbum"
+          },
+          "title": "список альбомов отсортированный по году издания"
+        }
+      }
+    },
+    "melomanGetArtistAlbumsResponseAlbum": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "id альбома"
+        },
+        "title": {
+          "type": "string",
+          "title": "название"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32",
+          "title": "год издания"
+        },
+        "image": {
+          "type": "string",
+          "title": "обложка (base64 encoded image)"
+        },
+        "format": {
+          "$ref": "#/definitions/melomanFormat",
+          "title": "формат"
+        },
+        "label": {
+          "$ref": "#/definitions/MedvatemelomanLabel",
+          "title": "издатель"
+        }
+      }
+    },
+    "melomanGetArtistByIDResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid исполнителя"
+        },
+        "fullName": {
+          "type": "string",
+          "title": "наименование"
+        },
+        "biography": {
+          "type": "string",
+          "title": "информация"
+        },
+        "image": {
+          "type": "string",
+          "title": "base64 encoded image"
+        }
+      }
+    },
+    "melomanGetArtistsResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "artists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetArtistsResponseArtist"
+          }
+        }
+      }
+    },
+    "melomanGetArtistsResponseArtist": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid исполнителя"
+        },
+        "fullName": {
+          "type": "string",
+          "title": "наименование"
+        },
+        "image": {
+          "type": "string",
+          "title": "base64 encoded image"
+        }
+      }
+    },
+    "melomanGetFormatsResponse": {
+      "type": "object",
+      "properties": {
+        "formats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanFormat"
+          }
+        }
+      }
+    },
+    "melomanGetLabelsResponse": {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MedvatemelomanLabel"
+          }
+        }
+      }
+    },
+    "melomanGetTopPopularArtistsResponse": {
+      "type": "object",
+      "properties": {
+        "artists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetTopPopularArtistsResponseArtist"
+          },
+          "title": "исполнители"
+        }
+      }
+    },
+    "melomanGetTopPopularArtistsResponseArtist": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid исполнителя"
+        },
+        "name": {
+          "type": "string",
+          "title": "название исполнителя"
+        }
+      }
+    },
+    "melomanGetUserByIDResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/melomanUser",
+          "title": "пользователь"
+        }
+      }
+    },
+    "melomanGetUserCollectionResponse": {
+      "type": "object",
+      "properties": {
+        "statistic": {
+          "$ref": "#/definitions/GetUserCollectionResponseStatistic",
+          "title": "статистика по коллекции"
+        },
+        "artists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetUserCollectionResponseArtist"
+          },
+          "title": "исполнители"
+        },
+        "albums": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanGetUserCollectionResponseAlbum"
+          },
+          "title": "список альбомов"
+        }
+      }
+    },
+    "melomanGetUserCollectionResponseAlbum": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "id альбома"
+        },
+        "title": {
+          "type": "string",
+          "title": "название"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32",
+          "title": "год издания"
+        },
+        "image": {
+          "type": "string",
+          "title": "обложка (base64 encoded image)"
+        },
+        "format": {
+          "$ref": "#/definitions/melomanFormat",
+          "title": "формат"
+        },
+        "label": {
+          "$ref": "#/definitions/MedvatemelomanLabel",
+          "title": "издатель"
+        },
+        "artist": {
+          "$ref": "#/definitions/melomanGetUserCollectionResponseAlbumArtist",
+          "title": "исполнитель"
+        }
+      }
+    },
+    "melomanGetUserCollectionResponseAlbumArtist": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid исполнителя"
+        },
+        "name": {
+          "type": "string",
+          "title": "название исполнителя"
+        }
+      }
+    },
+    "melomanGetUserCollectionResponseArtist": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "uuid исполнителя"
+        },
+        "name": {
+          "type": "string",
+          "title": "название исполнителя"
+        }
+      }
+    },
+    "melomanGetUsersResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "всего пользователей"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/melomanUser"
+          },
+          "title": "текущий ответ"
+        }
+      }
+    },
+    "melomanRole": {
+      "type": "string",
+      "enum": [
+        "USER",
+        "ADMIN"
+      ],
+      "default": "USER",
+      "title": "- USER: пользователь\n - ADMIN: администратор"
+    },
+    "melomanUpdateUserRoleRequestValue": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/melomanRole"
+        }
+      }
+    },
+    "melomanUser": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "title": "логин"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "время регистрации пользователя"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "время последнего изменения пользователя"
+        },
+        "role": {
+          "$ref": "#/definitions/melomanRole",
+          "title": "роль пользователя"
+        },
+        "id": {
+          "type": "string",
+          "title": "ID пользователя"
+        }
+      }
+    },
+    "MedvatemelomanLabel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "id издателя"
+        },
+        "name": {
+          "type": "string",
+          "title": "наименование"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        },
+        "value": {
+          "type": "string",
+          "format": "byte",
+          "description": "Must be a valid serialized protocol buffer of the above specified type."
+        }
+      },
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "name": "grpc-metadata-authorization",
+      "in": "header",
+      "x-amazon-apigateway-authorizer": {
+        "authorizerResultTtlInSeconds": 1800,
+        "type": "token"
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "ТЗ",
+    "url": "https://github.com/Medvate/meloman"
+  }
+}

@@ -1,0 +1,764 @@
+syntax = "proto3";
+
+package github.Medvate.meloman;
+
+
+import "google/api/annotations.proto";
+import "google/api/http.proto";
+import "google/api/httpbody.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/Medvate/meloman/pkg/api/meloman";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+	info: {
+        description: "Сервис предоставляет REST API для работы с БД меломан."
+		title: "Курсовая работа по курсу БСБД ИУ8-81 МГТУ им. Н. Э. Баумана 2021г.";
+		version: "1.0.0";
+		contact: {
+			name: "Leonid Medvate";
+			url: "https://github.com/Medvate";
+			email: "abracadabra.14@mail.ru";
+		};
+		license: {
+			name: "MIT License";
+			url: "https://raw.githubusercontent.com/Medvate/meloman/main/LICENSE";
+		};
+	};
+    host: "localhost:80"
+	external_docs: {
+		url: "https://github.com/Medvate/meloman";
+		description: "ТЗ";
+	}
+	schemes: HTTP;
+	schemes: HTTPS;
+	consumes: "application/json";
+	produces: "application/json";
+	security_definitions: {
+		security: {
+			key: "ApiKeyAuth";
+			value: {
+				type: TYPE_API_KEY;
+				in: IN_HEADER;
+				name: "grpc-metadata-authorization";
+				extensions: {
+					key: "x-amazon-apigateway-authorizer";
+					value {
+						struct_value {
+							fields {
+								key: "type";
+								value {
+									string_value: "token";
+								}
+							}
+							fields {
+								key: "authorizerResultTtlInSeconds";
+								value {
+									number_value: 1800;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+
+service Meloman {
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+		description: "Сервис-интерфейс к БД меломан"
+		external_docs: {
+			url: "https://github.com/grpc-ecosystem/grpc-gateway";
+			description: "Find out more about EchoService";
+		}
+	};
+
+    // проверка работоспособности сервиса
+    //
+    // access: *
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            get: "/ping"
+        };
+    }
+
+    // авторизация
+    //
+    // access: *
+    rpc Auth(AuthRequest) returns(AuthResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/auth",
+            body: "credentials"
+        };
+    }
+
+    // создание пользователя/регистрация
+    //
+    // access: *
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/users",
+            body: "credentials"
+        };
+    }
+
+    // получение пользователя по id
+    //
+    // access: user, admin
+    rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/users/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получение всех пользователей
+    //
+    // access: user, admin
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/users"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // изменение роли пользователя
+    //
+    // access: admin
+    rpc UpdateUserRole(UpdateUserRoleRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/api/v1/users/{id}/role"
+            body: "role"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // создание исполнителя
+    //
+    // access: admin
+    rpc CreateArtist(CreateArtistRequest) returns (CreateArtistsResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/artists"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+    
+    // получить список всех исполнитей
+    //
+    // access: user, admin
+    rpc GetArtists(GetArtistsRequest) returns (GetArtistsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/artists"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получение исполнителя по id
+    //
+    // access: user, admin
+    rpc GetArtistByID(GetArtistByIDRequest) returns (GetArtistByIDResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/artists/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получение списка альбомов исполнителя
+    //
+    // access: user, admin
+    rpc GetArtistAlbums(GetArtistAlbumsRequest) returns (GetArtistAlbumsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/artists/{id}/albums"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получить список всех форматов
+    //
+    // access: user, admin
+    rpc GetFormats(google.protobuf.Empty) returns (GetFormatsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/formats"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получить список всех издателей
+    //
+    // access: user, admin
+    rpc GetLabels(google.protobuf.Empty) returns (GetLabelsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/labels"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // создание альбома
+    //
+    // access: admin
+    rpc CreateAlbum(CreateAlbumRequest) returns (CreateAlbumResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/artists/{id}/albums"
+            body: "album"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // создание/добавление композиции в альбом
+    //
+    // access: admin
+    rpc CreateTrack(CreateTrackRequest) returns (CreateTrackResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/albums/{id}/tracks"
+            body: "track"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получение композиций альбома
+    //
+    // access: user, admin
+    rpc GetAlbumTracks(GetAlbumTracksRequest) returns (GetAlbumTracksResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/albums/{id}/tracks"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // поиск альбома по фильтру
+    //
+    // access: user, admin
+    rpc GetAlbumsByFilter(GetAlbumsByFilterRequest) returns (GetAlbumsByFilterResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/albums"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // добавление альбома в коллекцию пользователя
+    //
+    // access: owner
+    rpc AddAlbum(AddAlbumRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            put: "/api/v1/users/{user_id}/albums/{album_id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // удаление альбома из коллекции пользователя
+    //
+    // access: owner
+    rpc RemoveAlbum(RemoveAlbumRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/api/v1/users/{user_id}/albums/{album_id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получить коллекцию пользователя
+    //
+    // access: user, admin
+    rpc GetUserCollection(GetUserCollectionRequest) returns (GetUserCollectionResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/users/{id}/collection"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+
+    // получить топ популярных исполнителей
+    //
+    // access: user, admin
+    rpc GetTopPopularArtists(google.protobuf.Empty) returns (GetTopPopularArtistsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/artists/popular"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {}
+				}
+			}
+		};
+    }
+}
+
+message Credentials {
+    // логин
+    string login = 1 [(google.api.field_behavior) = REQUIRED];
+    // пароль
+    string password = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CreateUserRequest {
+    // логин и пароль
+    Credentials credentials = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CreateUserResponse {
+    // id созданного пользователя
+    string id = 1;
+}
+
+message AuthRequest {
+    // логин и пароль
+    Credentials credentials = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message AuthResponse {
+    // id авторизированного пользователя
+    string id = 1;
+}
+
+message GetUserByIDRequest {
+    // id пользователя
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+enum Role {
+    // пользователь
+    USER = 0;
+    // администратор
+    ADMIN = 1;
+}
+
+message User {
+    // логин
+    string login = 1;
+    // время регистрации пользователя
+    google.protobuf.Timestamp created_at = 2;
+    // время последнего изменения пользователя
+    google.protobuf.Timestamp updated_at = 3;
+    // роль пользователя
+    Role role = 4;
+    // ID пользователя
+    string id = 5;
+}
+
+message GetUserByIDResponse {
+    // пользователь
+    User user = 1;
+}
+
+message GetUsersRequest {
+    // число пользователей в одном ответе, по уполномочию 100
+    optional uint32 limit = 1 [(google.api.field_behavior) = OPTIONAL];
+    // сдвиг в списке пользователй
+    optional uint32 offset = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GetUsersResponse {
+    // всего пользователей
+    uint32 total = 1;
+    // текущий ответ
+    repeated User users = 2;
+}
+
+message UpdateUserRoleRequest {
+    // uuid пользователя
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+
+    message Value {
+        Role role = 1 [(google.api.field_behavior) = REQUIRED];
+    }
+    // роль
+    Value role = 2;
+}
+
+message CreateArtistRequest {
+    // имя исполнителя/группы
+    string full_name = 1 [(google.api.field_behavior) = REQUIRED];
+    // биография
+    optional string biography = 2 [(google.api.field_behavior) = OPTIONAL];
+    // base64 encoded image
+    optional string image = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message CreateArtistsResponse {
+    // uuid созданного исполнителя/группы
+    string id = 1;
+}
+
+message GetArtistsRequest {
+    // число в одном ответе, по уполномочию 100
+    optional uint32 limit = 1 [(google.api.field_behavior) = OPTIONAL];
+    // сдвиг в списке
+    optional uint32 offset = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GetArtistsResponse {
+    uint32 total = 1;
+    message Artist {
+        // uuid исполнителя
+        string id = 1;
+        // наименование
+        string full_name = 2;
+        // base64 encoded image 
+        string image = 3;
+    }
+    repeated Artist artists = 2;
+}
+
+message GetArtistByIDRequest {
+    // uuid исполнителя
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetArtistByIDResponse {
+    // uuid исполнителя
+    string id = 1;
+    // наименование
+    string full_name = 2;
+    // информация
+    string biography = 3;
+    // base64 encoded image 
+    string image = 4;
+}
+
+message GetArtistAlbumsRequest {
+    // uuid исполнителя
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message Format {
+    // id формата
+    int32 id = 1;
+    // наименование
+    string name = 2;
+}
+
+message GetFormatsResponse {
+    repeated Format formats = 1;
+}
+
+message Label {
+    // id издателя
+    int32 id = 1;
+    // наименование
+    string name = 2;
+}
+
+message GetLabelsResponse {
+    repeated Label labels = 1;
+}
+
+message GetArtistAlbumsResponse {
+    message Album {
+        // id альбома
+        string id = 1;
+        // название
+        string title = 2;
+        // год издания
+        int32 year = 3;
+        // обложка (base64 encoded image)
+        string image = 4;
+        // формат
+        Format format = 5;
+        // издатель
+        Label label = 6;
+    }
+    // список альбомов отсортированный по году издания
+    repeated Album albums = 1;
+}
+
+message CreateAlbumRequest {
+    // uuid исполнителя
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+    message NewAlbum {
+        // название
+        string title = 1 [(google.api.field_behavior) = REQUIRED];
+        // год издания
+        int32 year = 2 [(google.api.field_behavior) = REQUIRED];
+        // обложка (base64 encoded image)
+        optional string image = 3 [(google.api.field_behavior) = OPTIONAL];
+        // id формата
+        int32 format_id = 4 [(google.api.field_behavior) = REQUIRED];
+        // id издателя
+        int32 label_id = 5 [(google.api.field_behavior) = REQUIRED];
+    }
+    // данные альбома/сингла
+    NewAlbum album = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CreateAlbumResponse {
+    // uuid созданного альбома
+    string id = 1;
+}
+
+message CreateTrackRequest {
+    // uuid альбома
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+    message Track {
+        // назавние композиции
+        string title = 1 [(google.api.field_behavior) = REQUIRED];
+        // номер композиции в альбоме
+        int32 number = 2 [(google.api.field_behavior) = REQUIRED];
+        // длительность, формат: ЧЧ:ММ:СС
+        string lenght = 3 [(google.api.field_behavior) = REQUIRED];
+    }
+    Track track = 2;
+}
+
+message CreateTrackResponse {
+    // uuid созданного трека
+    string id = 1;
+}
+
+message GetAlbumTracksRequest {
+    // uuid альбома
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetAlbumTracksResponse {
+    message Track {
+        // uuid композиции 
+        string id = 1;
+        // назавние композиции
+        string title = 2;
+        // номер композиции в альбоме
+        int32 number = 3;
+        // длительность, формат: ЧЧ:ММ:СС
+        string lenght = 4;
+    }
+    // копозиции альбома отсортированные по номеру в альбоме
+    repeated Track tracks = 1;
+}
+
+message GetAlbumsByFilterRequest {
+    // название альбома
+    optional string album_title = 1;
+    // имя артиста
+    optional string artist_name = 2;
+    // название композиции
+    optional string track_title = 3;
+    //
+    optional uint64 limit = 4;
+    //
+    optional uint64 offset = 5;
+}
+
+message GetAlbumsByFilterResponse {
+    message Album {
+        // id альбома
+        string id = 1;
+        // название
+        string title = 2;
+        // год издания
+        int32 year = 3;
+        // обложка (base64 encoded image)
+        string image = 4;
+        // формат
+        Format format = 5;
+        // издатель
+        Label label = 6;
+        message Artist {
+            // uuid исполнителя
+            string id = 1;
+            // название исполнителя
+            string name = 2;
+        }
+        // исполнитель
+        Artist artist = 7;
+    }
+    // список альбомов
+    repeated Album albums = 1;
+}
+
+message AddAlbumRequest {
+    // uuid пользователя
+    string user_id = 1;
+    // uuid альбома
+    string album_id = 2;
+}
+
+message RemoveAlbumRequest {
+    // uuid пользователя
+    string user_id = 1;
+    // uuid альбома
+    string album_id = 2;
+}
+
+message GetUserCollectionRequest {
+    // uuid пользователя
+    string id = 1;
+}
+
+message GetUserCollectionResponse {
+    message Statistic {
+        // число альбомов в коллекции
+        uint32 album_num = 1;
+        // число композиций в коллекции 
+        uint32 track_num = 2;
+        // число исполнителей в коллекции
+        uint32 artist_num = 3;
+        // время добавление первого альбома в коллекцию
+        google.protobuf.Timestamp first_added = 4;
+        // время добавление последнего альбома в коллекцию
+        google.protobuf.Timestamp last_added = 5;   
+    }
+    // статистика по коллекции
+    Statistic statistic = 1;
+    message Artist {
+        // uuid исполнителя
+        string id = 1;
+        // название исполнителя
+        string name = 2;
+        // число альбомов в коллекции 
+        uint64 albums_num = 3;
+    }
+    // исполнители
+    repeated Artist artists = 2;
+    message Album {
+        // id альбома
+        string id = 1;
+        // название
+        string title = 2;
+        // год издания
+        int32 year = 3;
+        // обложка (base64 encoded image)
+        string image = 4;
+        // формат
+        Format format = 5;
+        // издатель
+        Label label = 6;
+        message Artist {
+            // uuid исполнителя
+            string id = 1;
+            // название исполнителя
+            string name = 2;
+        }
+        // исполнитель
+        Artist artist = 7;
+    }
+    // список альбомов
+    repeated Album albums = 3;
+}
+
+message GetTopPopularArtistsResponse {
+    message Artist {
+        // uuid исполнителя
+        string id = 1;
+        // название исполнителя
+        string name = 2;
+    }
+    // исполнители
+    repeated Artist artists = 1;
+}
